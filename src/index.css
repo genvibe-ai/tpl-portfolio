@@ -1,0 +1,382 @@
+@import "tailwindcss";
+
+/* ---------------------------------------------------------------------------
+   Design tokens
+   Colors here are FALLBACKS only: the live values come from src/content.ts
+   (theme.colors) and are applied at startup by src/lib/site.ts.
+   Fonts are self-hosted with Fontsource (imported in src/main.tsx).
+   ------------------------------------------------------------------------- */
+@theme {
+  --color-background: #f4f1ea;
+  --color-surface: #eae5d9;
+  --color-raised: #fbfaf6;
+  --color-foreground: #141414;
+  --color-muted: #5c574f;
+  --color-accent: #e8452c;
+  --color-accent-strong: #b12f19;
+  --color-accent-foreground: #141414;
+  --color-inverse: #141414;
+  --color-inverse-foreground: #f4f1ea;
+  --color-inverse-muted: #a39d91;
+
+  --font-display: "Newsreader Variable", "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+  --font-sans: "Schibsted Grotesk Variable", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  --ease-editorial: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-curtain: cubic-bezier(0.76, 0, 0.24, 1);
+}
+
+@layer base {
+  html {
+    color-scheme: light;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--color-background);
+    /* Paper grain: a light noise tile that scrolls with the page. */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.08 0 0 0 0 0.07 0 0 0 0 0.05 0 0 0 0.11 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    font-size: 1.0625rem;
+    line-height: 1.6;
+    overflow-x: clip;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  ::selection {
+    background: var(--color-accent);
+    color: var(--color-accent-foreground);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-accent-strong);
+    outline-offset: 3px;
+  }
+
+  /* Anchor jumps land below the fixed nav. */
+  [id] {
+    scroll-margin-top: 5.5rem;
+  }
+
+  img {
+    max-width: 100%;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Layout & type utilities (usable with variants, e.g. md:display-lg)
+   ------------------------------------------------------------------------- */
+@utility container-page {
+  width: 100%;
+  max-width: 90rem;
+  margin-inline: auto;
+  padding-inline: clamp(1.25rem, 4vw, 3.5rem);
+}
+
+@utility section-pad {
+  padding-block: clamp(5rem, 10vw, 9.5rem);
+}
+
+/* Small letter-spaced label. */
+@utility eyebrow {
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+/* Hero statement: Newsreader at its display optical size.
+   Phones: poster-size, four lines ("and products" still fits at 360px).
+   From md up: two lines, capped so "Brands … and products" never wraps. */
+@utility display-hero {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(2.6rem, 15vw, 5.5rem);
+  line-height: 0.96;
+  letter-spacing: -0.035em;
+
+  @media (width >= 48rem) {
+    font-size: min(8.6vw, 7.9rem);
+  }
+}
+
+@utility display-xl {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(2.5rem, 6vw, 6rem);
+  line-height: 1;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+}
+
+@utility display-lg {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(2.1rem, 4.4vw, 4.25rem);
+  line-height: 1.04;
+  letter-spacing: -0.025em;
+  text-wrap: balance;
+}
+
+@utility display-md {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(1.6rem, 2.7vw, 2.5rem);
+  line-height: 1.12;
+  letter-spacing: -0.018em;
+  text-wrap: balance;
+}
+
+@utility lead {
+  font-size: clamp(1.125rem, 1.35vw, 1.3rem);
+  line-height: 1.55;
+}
+
+@utility hairline {
+  border-color: color-mix(in oklab, var(--color-foreground) 15%, transparent);
+}
+
+@utility hairline-inverse {
+  border-color: color-mix(in oklab, var(--color-inverse-foreground) 16%, transparent);
+}
+
+@utility no-scrollbar {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* Form fields on the contact page. */
+@utility field {
+  display: block;
+  width: 100%;
+  border: 0;
+  border-bottom: 1px solid color-mix(in oklab, var(--color-foreground) 28%, transparent);
+  border-radius: 0;
+  background: transparent;
+  padding: 0.75rem 0 0.8rem;
+  color: var(--color-foreground);
+  font-size: 1.125rem;
+  transition: border-color 0.3s;
+  &::placeholder {
+    color: color-mix(in oklab, var(--color-foreground) 60%, transparent);
+  }
+  &:hover {
+    border-bottom-color: color-mix(in oklab, var(--color-foreground) 55%, transparent);
+  }
+  &:focus {
+    outline: none;
+    border-bottom-color: var(--color-foreground);
+    box-shadow: 0 1px 0 0 var(--color-foreground);
+  }
+  &[aria-invalid="true"] {
+    border-bottom-color: var(--color-accent-strong);
+    box-shadow: 0 1px 0 0 var(--color-accent-strong);
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Editorial details
+   ------------------------------------------------------------------------- */
+
+@layer components {
+/* Italic serif accents sit a touch looser than the roman display text. */
+.accent-italic {
+  font-family: var(--font-display);
+  font-style: italic;
+  letter-spacing: -0.012em;
+  padding-right: 0.04em;
+}
+
+/* A line of display type that rises out of its own mask (padding keeps italics and descenders unclipped). */
+.line-mask {
+  display: block;
+  overflow: hidden;
+  padding: 0.04em 0.12em 0.14em 0.02em;
+  margin: -0.04em -0.12em -0.14em -0.02em;
+}
+
+/* Link underline that draws in from the left on hover. */
+.link-draw {
+  background-image: linear-gradient(currentColor, currentColor);
+  background-size: 0% 1px;
+  background-position: 0 100%;
+  background-repeat: no-repeat;
+  transition: background-size 0.5s var(--ease-editorial);
+}
+.link-draw:hover,
+.link-draw:focus-visible {
+  background-size: 100% 1px;
+}
+
+/* Underlined by default; the line slides away and back on hover. */
+.link-under {
+  background-image: linear-gradient(currentColor, currentColor);
+  background-size: 100% 1px;
+  background-position: 100% 100%;
+  background-repeat: no-repeat;
+  transition: background-size 0.5s var(--ease-editorial);
+}
+.link-under:hover {
+  animation: underline-redraw 0.7s var(--ease-editorial);
+}
+@keyframes underline-redraw {
+  0% {
+    background-size: 100% 1px;
+    background-position: 100% 100%;
+  }
+  45% {
+    background-size: 0% 1px;
+    background-position: 100% 100%;
+  }
+  46% {
+    background-size: 0% 1px;
+    background-position: 0 100%;
+  }
+  100% {
+    background-size: 100% 1px;
+    background-position: 0 100%;
+  }
+}
+
+/* Button label that rolls up to a copy of itself on hover. */
+.roll {
+  position: relative;
+  display: inline-flex;
+  overflow: hidden;
+  line-height: 1.25;
+}
+.roll > span {
+  display: block;
+  transition: transform 0.55s var(--ease-editorial);
+}
+.roll > span + span {
+  position: absolute;
+  inset: 0;
+  transform: translateY(105%);
+}
+.group:hover .roll > span:first-child,
+.group:focus-visible .roll > span:first-child {
+  transform: translateY(-105%);
+}
+.group:hover .roll > span + span,
+.group:focus-visible .roll > span + span {
+  transform: translateY(0);
+}
+
+/* Pulsing availability dot. */
+.live-dot {
+  position: relative;
+  display: inline-block;
+  width: 0.5rem;
+  height: 0.5rem;
+  flex: none;
+  border-radius: 9999px;
+  background: var(--color-accent);
+}
+.live-dot::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: inherit;
+  animation: live-ping 2.4s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+@keyframes live-ping {
+  75%,
+  100% {
+    transform: scale(2.6);
+    opacity: 0;
+  }
+}
+
+/* "Scroll" cue: a vermilion tick sliding down a hairline. */
+.scroll-cue {
+  position: relative;
+  width: 1px;
+  height: 2.5rem;
+  overflow: hidden;
+  background: color-mix(in oklab, var(--color-foreground) 18%, transparent);
+}
+.scroll-cue::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: -40%;
+  width: 1px;
+  height: 40%;
+  background: var(--color-accent);
+  animation: scroll-cue 2.2s var(--ease-curtain) infinite;
+}
+@keyframes scroll-cue {
+  to {
+    top: 100%;
+  }
+}
+
+/* Marquee strip above the footer. */
+.marquee-track {
+  animation: marquee 38s linear infinite;
+}
+@keyframes marquee {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+/* Footer wordmark: each letter is a span whose weight follows the pointer (src/components/layout/Wordmark.tsx). */
+.weight-letter {
+  display: inline-block;
+  font-weight: 400;
+  transition: font-weight 0.45s var(--ease-editorial);
+}
+.weight-wave .weight-letter {
+  animation: weight-wave 1.6s var(--ease-editorial) both;
+  animation-delay: calc(var(--i) * 70ms);
+}
+@keyframes weight-wave {
+  0%,
+  100% {
+    font-weight: 400;
+  }
+  45% {
+    font-weight: 780;
+  }
+}
+}
+
+/* Respect reduced motion: no looping or decorative animation. */
+@media (prefers-reduced-motion: reduce) {
+  .live-dot::after,
+  .scroll-cue::after,
+  .marquee-track,
+  .weight-wave .weight-letter {
+    animation: none;
+  }
+  .weight-letter,
+  .roll > span,
+  .link-draw,
+  .link-under {
+    transition: none;
+  }
+  .link-under:hover {
+    animation: none;
+  }
+}
